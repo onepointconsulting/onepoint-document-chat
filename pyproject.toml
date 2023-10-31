@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "onepoint-document-chat"
+version = "0.1.0"
+description = ""
+authors = ["Gil Fernandes <gil.fernandes@onepointltd.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+langchain = "^0.0.323"
+openai = "^0.28.1"
+python-dotenv = "^1.0.0"
+pypdfium2 = "^4.22.0"
+tomli = "^2.0.1"
+faiss-cpu = "^1.7.4"
+tiktoken = "^0.5.1"
+python-socketio = "^5.10.0"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.3"
+black = "^23.10.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
