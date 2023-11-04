@@ -13,6 +13,10 @@ human_message="""Perform the following tasks on the text inside of these delimit
 [retrieval_qa]
 human_message = """Given the following extracted parts of a long document and a question, create a final answer with references ("SOURCES"). 
 If you don't know the answer, just say that you don't know. Don't try to make up an answer.
+
+For context here are some previous answers:
+{history}
+
 ALWAYS return a "SOURCES" part in your answer.
 
 QUESTION: Which state/country's law governs the interpretation of the contract?

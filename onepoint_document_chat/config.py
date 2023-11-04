@@ -56,6 +56,13 @@ class Config:
 
     # Websocket
     websocket_cors_allowed_origins = os.getenv("WEBSOCKET_CORS_ALLOWED_ORIGINS")
+    websocket_server = os.getenv("WEBSOCKET_SERVER")
+    websocket_port = int(os.getenv("WEBSOCKET_PORT"))
+
+    # Web server
+    webserver_files = os.getenv("WEBSERVER_FILES")
+    webserver_server = os.getenv("WEBSERVER_SERVER")
+    webserver_port = int(os.getenv("WEBSERVER_PORT"))
 
     def __repr__(self) -> str:
         props = {

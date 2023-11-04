@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Dict, Any, Union
 
 from langchain.pydantic_v1 import BaseModel, Field
 from langchain.schema import Document
@@ -18,6 +18,7 @@ from onepoint_document_chat.config import cfg
 
 SUMMARIES = "summaries"
 QUESTION = "question"
+HISTORY = "history"
 
 
 def convert_document_to_text(doc: Document) -> str:
@@ -28,12 +29,14 @@ Source: {doc.metadata[FILE_NAME]}, pages: {doc.metadata[PAGE]}
 
 def create_prompt_template() -> PromptTemplate:
     template = prompts_toml["retrieval_qa"]["human_message"]
-    return PromptTemplate(template=template, input_variables=[SUMMARIES, QUESTION])
+    return PromptTemplate(
+        template=template, input_variables=[SUMMARIES, QUESTION, HISTORY]
+    )
 
 
 class ResponseText(BaseModel):
     response: str = Field(description="The response to the user's question")
-    sources: str = Field(
+    sources: Union[str, None] = Field(
         description="The sources based on which the response was generated"
     )
 
@@ -68,11 +71,15 @@ def create_stuff_chain() -> LLMChain:
 qa_service_chain = create_stuff_chain()
 
 
-def answer_question(question: str):
+def answer_question(question: str, history: str = "") -> ResponseText:
+    if history == "":
+        history = "<empty>"
     vst = init_vector_search(False)
     documents = similarity_search(vst, question)
     summaries = "\n".join([convert_document_to_text(doc) for doc in documents])
-    return qa_service_chain.run({SUMMARIES: summaries, QUESTION: question})
+    return qa_service_chain.run(
+        {SUMMARIES: summaries, QUESTION: question, HISTORY: history}
+    )
 
 
 if __name__ == "__main__":

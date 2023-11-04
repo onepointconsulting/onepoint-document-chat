@@ -14,3 +14,13 @@ conda create -n onepoint_document_chat python=3.11
 conda activate onepoint_document_chat
 pip install poetry
 ``````
+
+## Running the server
+
+```
+python .\onepoint_document_chat\server\http_server.py
+```
+
+```
+python .\onepoint_document_chat\server\websocket_server.py
+```
