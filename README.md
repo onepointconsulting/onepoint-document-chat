@@ -15,6 +15,8 @@ conda activate onepoint_document_chat
 pip install poetry
 ``````
 
+Also copy the content of the binary of this repository (https://github.com/onepointconsulting/chatbot-ui.git) to a new `ui` folder.
+
 ## Running the server
 
 ```
