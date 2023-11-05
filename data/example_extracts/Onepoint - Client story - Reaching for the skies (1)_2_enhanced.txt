@@ -1,0 +1,23 @@
+We introduced a range of innovations that underpin the platform’s architecture and helped transform how frontline teams deliver better customer experiences and insights. This client story shares the journey and the transformation that followed.
+
+Scope
+• Global custom reporting
+• Data lifecycle management
+• Data quality
+• Business rules management
+• Regulatory compliance
+
+Technologies
+• Drools
+• Kubernetes
+• Microsoft Azure
+• Talend MDM
+
+When one of the world’s largest travel management groups wanted to reimagine the data platform that would spearhead its digital transformation, they called Onepoint.
+
+2. Onepoint Reaching for the skies
+
+Business benefits
+• Improved customer and colleague experience
+• Improved flexibility and agility of the business
+• Enhanced data quality and richness
