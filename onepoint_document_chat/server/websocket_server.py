@@ -19,9 +19,7 @@ routes = web.RouteTableDef()
 
 @routes.get("/")
 async def get_handler(request):
-    name = request.query.get("name", "Anonymous")
-    text = "Hello, " + name
-    return web.Response(text=text)
+    raise web.HTTPFound('/index.html')
 
 
 @sio.event
@@ -48,5 +46,6 @@ def disconnect(sid):
 
 if __name__ == "__main__":
     app.add_routes(routes)
-    app.router.add_static('/files/', path=cfg.data_folder.as_posix(), name='files')
+    app.router.add_static("/files/", path=cfg.data_folder.as_posix(), name="files")
+    app.router.add_static("/", path=cfg.ui_folder.as_posix(), name="ui")
     web.run_app(app, host=cfg.websocket_server, port=cfg.websocket_port)

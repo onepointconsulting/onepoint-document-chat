@@ -36,6 +36,8 @@ class Config:
     project_root = Path(os.getenv("PROJECT_ROOT"))
     data_folder = Path(os.getenv("DATA_FOLDER"))
     assert data_folder.exists()
+    ui_folder = Path(os.getenv("UI_FOLDER"))
+    assert ui_folder.exists()
 
     tmp_folder = Path(os.getenv("TMP_FOLDER"))
     create_folder_if_not_exists(tmp_folder)
