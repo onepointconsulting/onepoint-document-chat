@@ -20,9 +20,5 @@ Also copy the content of the binary of this repository (https://github.com/onepo
 ## Running the server
 
 ```
-python .\onepoint_document_chat\server\http_server.py
-```
-
-```
-python .\onepoint_document_chat\server\websocket_server.py
+python ./onepoint_document_chat/server/websocket_server.py
 ```
