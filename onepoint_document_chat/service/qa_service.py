@@ -3,7 +3,7 @@ from typing import Dict, Any, Union
 from langchain.pydantic_v1 import BaseModel, Field
 from langchain.schema import Document
 from langchain.chains import LLMChain
-from langchain.prompts import PromptTemplate
+from langchain.prompts import PromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate, ChatPromptTemplate
 from langchain.output_parsers.openai_functions import PydanticAttrOutputFunctionsParser
 from langchain.chains.openai_functions.base import convert_to_openai_function
 
@@ -27,12 +27,25 @@ Source: {doc.metadata[FILE_NAME]}, pages: {doc.metadata[PAGE]}
 """
 
 
-def create_prompt_template() -> PromptTemplate:
-    template = prompts_toml["retrieval_qa"]["human_message"]
-    return PromptTemplate(
-        template=template, input_variables=[SUMMARIES, QUESTION, HISTORY]
-    )
+def create_prompt_template() -> ChatPromptTemplate:
+    section = prompts_toml["retrieval_qa"]
+    human_message = section["human_message"]
+    system_message = section["system_message"]
 
+    prompt_msgs = [
+        SystemMessagePromptTemplate(
+            prompt=PromptTemplate(
+                template=system_message, input_variables=[]
+            )
+        ),
+        HumanMessagePromptTemplate(
+            prompt=PromptTemplate(
+                template=human_message,
+                input_variables=[SUMMARIES, QUESTION, HISTORY],
+            )
+        ),
+    ]
+    return ChatPromptTemplate(messages=prompt_msgs)
 
 class ResponseText(BaseModel):
     response: str = Field(description="The response to the user's question")

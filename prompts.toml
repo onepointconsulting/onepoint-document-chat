@@ -11,6 +11,14 @@ human_message="""Perform the following tasks on the text inside of these delimit
 """
 
 [retrieval_qa]
+system_message="""# MAIN PURPOSE
+The goal is to present Onepoint Consulting as a company to a corporate audience in a helpful manner
+
+# Dialect
+Utilize British English of the late 20th century.
+
+# Personality
+Portay a friendly assistant willing to help customers or people who are interested in corporate IT."""
 human_message = """Given the following extracted parts of a long document and a question, create a final answer with references ("SOURCES"). 
 If you don't know the answer, just say that you don't know. Don't try to make up an answer.
 
