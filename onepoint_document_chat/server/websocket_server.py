@@ -1,13 +1,24 @@
 import socketio
 from pathlib import Path
+from typing import List
 
 from asyncer import asyncify
 from aiohttp import web
+
+from langchain.schema import Document
 
 from onepoint_document_chat.config import cfg
 from onepoint_document_chat.log_init import logger
 from onepoint_document_chat.server.session import add_message, delete_session
 from onepoint_document_chat.service.qa_service import answer_question, ResponseText
+from onepoint_document_chat.service.embedding_generation import (
+    load_pdfs,
+    add_embeddings,
+)
+from onepoint_document_chat.service.qa_service import vst
+
+
+SUPPORTED_CONTENT_TYPES = ["application/pdf"]
 
 
 sio = socketio.AsyncServer(cors_allowed_origins=cfg.websocket_cors_allowed_origins)
@@ -53,12 +64,28 @@ async def upload_file(request):
     data = await request.post()
     file = data.get("file")
     if file is None:
-        return web.Response(text="""{"status": "error", "description": "Parameter 'file' missing"}""", content_type="application/json")
+        return web.json_response(
+            {"status": "error", "description": "Parameter 'file' missing"}
+        )
+
     file_name = file.filename
-    target_file: Path = cfg.webserver_upload_folder/file_name
+    file_content_type = file.content_type
+    if file_content_type not in SUPPORTED_CONTENT_TYPES:
+        return web.json_response(
+            {
+                "status": "error",
+                "description": "Unsupported file tipe: {file_content_type}. These are the supported file types: {SUPPORTED_CONTENT_TYPES}",
+            }
+        )
+
     content = file.file.read()
+    target_file: Path = cfg.webserver_upload_folder / file_name
     target_file.write_bytes(content)
-    return web.Response(text='{"status": "ok"}', content_type="application/json")
+    documents: List[Document] = await asyncify(load_pdfs)(cfg.webserver_upload_folder)
+    add_embeddings(documents, vst)
+    (cfg.data_folder / file_name).write_bytes(content)
+    target_file.unlink(missing_ok=True)
+    return web.json_response({"status": "ok", "loaded": len(documents)})
 
 
 if __name__ == "__main__":

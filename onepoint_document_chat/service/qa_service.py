@@ -3,7 +3,12 @@ from typing import Dict, Any, Union
 from langchain.pydantic_v1 import BaseModel, Field
 from langchain.schema import Document
 from langchain.chains import LLMChain
-from langchain.prompts import PromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate, ChatPromptTemplate
+from langchain.prompts import (
+    PromptTemplate,
+    SystemMessagePromptTemplate,
+    HumanMessagePromptTemplate,
+    ChatPromptTemplate,
+)
 from langchain.output_parsers.openai_functions import PydanticAttrOutputFunctionsParser
 from langchain.chains.openai_functions.base import convert_to_openai_function
 
@@ -14,6 +19,7 @@ from onepoint_document_chat.service.vector_search import (
 from onepoint_document_chat.service.text_extraction import FILE_NAME, PAGE
 from onepoint_document_chat.toml_support import prompts_toml
 from onepoint_document_chat.config import cfg
+from onepoint_document_chat.service.vector_search import vst
 
 
 SUMMARIES = "summaries"
@@ -34,9 +40,7 @@ def create_prompt_template() -> ChatPromptTemplate:
 
     prompt_msgs = [
         SystemMessagePromptTemplate(
-            prompt=PromptTemplate(
-                template=system_message, input_variables=[]
-            )
+            prompt=PromptTemplate(template=system_message, input_variables=[])
         ),
         HumanMessagePromptTemplate(
             prompt=PromptTemplate(
@@ -46,6 +50,7 @@ def create_prompt_template() -> ChatPromptTemplate:
         ),
     ]
     return ChatPromptTemplate(messages=prompt_msgs)
+
 
 class ResponseText(BaseModel):
     response: str = Field(description="The response to the user's question")
@@ -87,7 +92,6 @@ qa_service_chain = create_stuff_chain()
 def answer_question(question: str, history: str = "") -> ResponseText:
     if history == "":
         history = "<empty>"
-    vst = init_vector_search(False)
     documents = similarity_search(vst, question)
     summaries = "\n".join([convert_document_to_text(doc) for doc in documents])
     return qa_service_chain.run(

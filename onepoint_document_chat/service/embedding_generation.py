@@ -1,7 +1,9 @@
+import shutil
 from typing import List, TypeVar
 
 from langchain.schema import Document
 from langchain.vectorstores.faiss import FAISS
+from langchain.schema import Document
 
 from onepoint_document_chat.config import cfg
 from onepoint_document_chat.log_init import logger
@@ -39,8 +41,11 @@ def generate_faiss_enhanced_embeddings(documents: List[Document]) -> VST:
     return generate_faiss_embeddings(enhanced)
 
 
-def add_embeddings(documents: List[Document], vst: FAISS) -> VST:
+def add_embeddings(documents: List[Document], vst: FAISS):
     vst.add_documents(documents)
+    if cfg.embeddings_folder_faiss.exists():
+        shutil.rmtree(cfg.embeddings_folder_faiss)
+    cfg.embeddings_folder_faiss.mkdir(parents=True, exist_ok=True)
     vst.save_local(cfg.embeddings_folder_faiss)
 
 

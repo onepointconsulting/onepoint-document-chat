@@ -28,8 +28,10 @@ def init_vector_search(delete: bool = False) -> FAISS:
         return generate_faiss_enhanced_embeddings(documents)
 
 
+vst = init_vector_search(False)
+
+
 if __name__ == "__main__":
-    vst = init_vector_search(False)
     documents = similarity_search(
         vst, "Which are Onepoint's projects related to the travel industry?"
     )
