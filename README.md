@@ -13,6 +13,7 @@ conda remove -n onepoint_document_chat --all
 conda create -n onepoint_document_chat python=3.11
 conda activate onepoint_document_chat
 pip install poetry
+poetry install
 ``````
 
 Also copy the content of the binary of this repository (https://github.com/onepointconsulting/chatbot-ui.git) to a new `ui` folder.

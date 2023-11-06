@@ -65,6 +65,8 @@ class Config:
     webserver_files = os.getenv("WEBSERVER_FILES")
     webserver_server = os.getenv("WEBSERVER_SERVER")
     webserver_port = int(os.getenv("WEBSERVER_PORT"))
+    webserver_upload_folder = Path(os.getenv("WEBSERVER_UPLOAD_FOLDER"))
+    create_folder_if_not_exists(webserver_upload_folder)
 
     def __repr__(self) -> str:
         props = {

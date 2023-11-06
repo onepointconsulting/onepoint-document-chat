@@ -39,8 +39,9 @@ def generate_faiss_enhanced_embeddings(documents: List[Document]) -> VST:
     return generate_faiss_embeddings(enhanced)
 
 
-def add_embeddings(documents: List[Document]) -> VST:
-    pass
+def add_embeddings(documents: List[Document], vst: FAISS) -> VST:
+    vst.add_documents(documents)
+    vst.save_local(cfg.embeddings_folder_faiss)
 
 
 if __name__ == "__main__":
