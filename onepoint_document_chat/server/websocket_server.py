@@ -56,6 +56,10 @@ def disconnect(sid):
     delete_session(sid)
 
 
+def send_error(description: str, status: int = 200) -> str:
+    return web.json_response({"status": "error", "description": description}, status=status)
+
+
 @routes.post("/upload")
 async def upload_file(request):
     """
@@ -64,9 +68,11 @@ async def upload_file(request):
     data = await request.post()
     file = data.get("file")
     if file is None:
-        return web.json_response(
-            {"status": "error", "description": "Parameter 'file' missing"}
-        )
+        return send_error("Parameter 'file' missing")
+
+    token = data.get("token")
+    if token != cfg.webserver_upload_token:
+        return send_error("Security token is wrong.", 403)
 
     file_name = file.filename
     file_content_type = file.content_type

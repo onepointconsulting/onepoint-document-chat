@@ -66,6 +66,9 @@ class Config:
     webserver_server = os.getenv("WEBSERVER_SERVER")
     webserver_port = int(os.getenv("WEBSERVER_PORT"))
     webserver_upload_folder = Path(os.getenv("WEBSERVER_UPLOAD_FOLDER"))
+    webserver_upload_token = os.getenv("WEBSERVER_UPLOAD_TOKEN")
+    assert webserver_upload_token is not None
+
     create_folder_if_not_exists(webserver_upload_folder)
 
     def __repr__(self) -> str:
