@@ -37,6 +37,13 @@ async def get_handler(request):
     raise web.HTTPFound("/index.html")
 
 
+@routes.get("/upload")
+async def get_handler(request):
+    html = (cfg.ui_folder/"index.html").read_text()
+    return web.Response(text=html, content_type='text/html')
+    
+
+
 @sio.event
 def connect(sid, environ):
     logger.info("connect %s ", sid)
@@ -108,5 +115,4 @@ if __name__ == "__main__":
     app.add_routes(routes)
     app.router.add_static("/files/", path=cfg.data_folder.as_posix(), name="files")
     app.router.add_static("/", path=cfg.ui_folder.as_posix(), name="ui")
-    app.router.add_static("/upload", path=cfg.ui_folder.as_posix(), name="upload")
     web.run_app(app, host=cfg.websocket_server, port=cfg.websocket_port)
