@@ -18,6 +18,9 @@ from onepoint_document_chat.service.embedding_generation import (
 from onepoint_document_chat.service.qa_service import vst
 
 
+CORS_HEADERS = {
+    "Access-Control-Allow-Origin": "*",
+}
 SUPPORTED_CONTENT_TYPES = ["application/pdf"]
 
 
@@ -57,7 +60,11 @@ def disconnect(sid):
 
 
 def send_error(description: str, status: int = 200) -> str:
-    return web.json_response({"status": "error", "description": description}, status=status)
+    return web.json_response(
+        {"status": "error", "description": description},
+        status=status,
+        headers=CORS_HEADERS,
+    )
 
 
 @routes.post("/upload")
@@ -91,11 +98,15 @@ async def upload_file(request):
     add_embeddings(documents, vst)
     (cfg.data_folder / file_name).write_bytes(content)
     target_file.unlink(missing_ok=True)
-    return web.json_response({"status": "ok", "loaded": len(documents)})
+    return web.json_response(
+        {"status": "ok", "loaded": len(documents)},
+        headers=CORS_HEADERS,
+    )
 
 
 if __name__ == "__main__":
     app.add_routes(routes)
     app.router.add_static("/files/", path=cfg.data_folder.as_posix(), name="files")
     app.router.add_static("/", path=cfg.ui_folder.as_posix(), name="ui")
+    app.router.add_static("/upload", path=cfg.ui_folder.as_posix(), name="upload")
     web.run_app(app, host=cfg.websocket_server, port=cfg.websocket_port)
