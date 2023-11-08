@@ -36,12 +36,18 @@ def generate_faiss_embeddings(documents: List[Document]) -> VST:
 
 
 def generate_faiss_enhanced_embeddings(documents: List[Document]) -> VST:
-    documents = combine_documents(documents)
-    enhanced = enhance_documents(documents)
+    enhanced = improve_docs(documents)
     return generate_faiss_embeddings(enhanced)
 
 
+def improve_docs(documents):
+    documents = combine_documents(documents)
+    enhanced = enhance_documents(documents)
+    return enhanced
+
+
 def add_embeddings(documents: List[Document], vst: FAISS):
+    documents = improve_docs(documents)
     vst.add_documents(documents)
     if cfg.embeddings_folder_faiss.exists():
         shutil.rmtree(cfg.embeddings_folder_faiss)

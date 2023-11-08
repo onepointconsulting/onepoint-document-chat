@@ -39,9 +39,8 @@ async def get_handler(request):
 
 @routes.get("/upload")
 async def get_handler(request):
-    html = (cfg.ui_folder/"index.html").read_text()
-    return web.Response(text=html, content_type='text/html')
-    
+    html = (cfg.ui_folder / "index.html").read_text()
+    return web.Response(text=html, content_type="text/html")
 
 
 @sio.event
@@ -102,7 +101,7 @@ async def upload_file(request):
     target_file: Path = cfg.webserver_upload_folder / file_name
     target_file.write_bytes(content)
     documents: List[Document] = await asyncify(load_pdfs)(cfg.webserver_upload_folder)
-    add_embeddings(documents, vst)
+    await asyncify(add_embeddings)(documents, vst)
     (cfg.data_folder / file_name).write_bytes(content)
     target_file.unlink(missing_ok=True)
     return web.json_response(
