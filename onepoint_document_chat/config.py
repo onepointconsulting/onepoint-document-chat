@@ -16,6 +16,7 @@ def create_folder_if_not_exists(folder: Path):
 
 class Config:
     model = os.getenv("OPENAI_MODEL")
+    lower_model = os.getenv("OPENAI_MODEL_LOWER")
     request_timeout = int(os.getenv("REQUEST_TIMEOUT"))
     has_langchain_cache = os.getenv("LANGCHAIN_CACHE") == "true"
     streaming = os.getenv("CHATGPT_STREAMING") == "true"
@@ -23,6 +24,15 @@ class Config:
     llm = ChatOpenAI(
         openai_api_key=os.getenv("OPENAI_API_KEY"),
         model=model,
+        temperature=0,
+        request_timeout=request_timeout,
+        cache=has_langchain_cache,
+        streaming=streaming,
+        verbose=verbose_llm,
+    )
+    llm_optional = ChatOpenAI(
+        openai_api_key=os.getenv("OPENAI_API_KEY"),
+        model=lower_model,
         temperature=0,
         request_timeout=request_timeout,
         cache=has_langchain_cache,

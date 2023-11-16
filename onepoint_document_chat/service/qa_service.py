@@ -11,16 +11,16 @@ from langchain.prompts import (
 )
 from langchain.output_parsers.openai_functions import PydanticAttrOutputFunctionsParser
 from langchain.chains.openai_functions.base import convert_to_openai_function
+from langchain.chat_models import ChatOpenAI
 
 from onepoint_document_chat.service.vector_search import (
-    init_vector_search,
     similarity_search,
 )
 from onepoint_document_chat.service.text_extraction import FILE_NAME, PAGE
 from onepoint_document_chat.toml_support import prompts_toml
 from onepoint_document_chat.config import cfg
 from onepoint_document_chat.service.vector_search import vst
-
+from onepoint_document_chat.log_init import logger
 
 SUMMARIES = "summaries"
 QUESTION = "question"
@@ -59,7 +59,7 @@ class ResponseText(BaseModel):
     )
 
 
-def create_stuff_chain() -> LLMChain:
+def create_stuff_chain(llm: ChatOpenAI) -> LLMChain:
     class _OutputFormatter(BaseModel):
         """Output formatter. Should always be used to format your response to the user."""  # noqa: E501
 
@@ -78,7 +78,7 @@ def create_stuff_chain() -> LLMChain:
         llm_kwargs["function_call"] = {"name": openai_functions[0]["name"]}
 
     return LLMChain(
-        llm=cfg.llm,
+        llm=llm,
         prompt=create_prompt_template(),
         output_parser=output_parser,
         verbose=cfg.verbose_llm,
@@ -86,7 +86,8 @@ def create_stuff_chain() -> LLMChain:
     )
 
 
-qa_service_chain = create_stuff_chain()
+qa_service_chain = create_stuff_chain(cfg.llm)
+qa_service_optional_chain = create_stuff_chain(cfg.llm_optional)
 
 
 def answer_question(question: str, history: str = "") -> ResponseText:
@@ -94,9 +95,15 @@ def answer_question(question: str, history: str = "") -> ResponseText:
         history = "<empty>"
     documents = similarity_search(vst, question)
     summaries = "\n".join([convert_document_to_text(doc) for doc in documents])
-    return qa_service_chain.run(
-        {SUMMARIES: summaries, QUESTION: question, HISTORY: history}
-    )
+    try:
+        return qa_service_chain.run(
+            {SUMMARIES: summaries, QUESTION: question, HISTORY: history}
+        )
+    except:
+        logger.exception("Could not get response from main model")
+        return qa_service_optional_chain.run(
+            {SUMMARIES: summaries, QUESTION: question, HISTORY: history}
+        )
 
 
 if __name__ == "__main__":

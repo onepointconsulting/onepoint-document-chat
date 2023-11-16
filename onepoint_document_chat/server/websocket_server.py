@@ -52,9 +52,14 @@ def connect(sid, environ):
 async def question(sid, data):
     logger.info("question %s: %s", sid, data)
     session = add_message(sid, data)
-    res: ResponseText = await asyncify(answer_question)(
-        data, session.messages_history_str()
-    )
+    try:
+        res: ResponseText = await asyncify(answer_question)(
+            data, session.messages_history_str()
+        )
+    except:
+        logger.exception("Failed to get message from server")
+        await sio.emit("response", ResponseText(response="Sorry. Failed to process", sources="").json(), room=sid)
+        return    
     logger.info("response: %s", res.response)
     await sio.emit("response", res.json(), room=sid)
 
