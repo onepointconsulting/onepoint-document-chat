@@ -1,9 +1,12 @@
 import socketio
+import datetime
+
 from pathlib import Path
 from typing import List
 
 from asyncer import asyncify
 from aiohttp import web
+
 
 from langchain.schema import Document
 
@@ -33,14 +36,27 @@ routes = web.RouteTableDef()
 
 
 @routes.get("/")
-async def get_handler(request):
+async def get_handler(_):
     raise web.HTTPFound("/index.html")
 
 
 @routes.get("/upload")
-async def get_handler(request):
+async def get_handler(_):
     html = (cfg.ui_folder / "index.html").read_text()
     return web.Response(text=html, content_type="text/html")
+
+
+@routes.get("/upload/files")
+async def get_handler(_):
+    response = []
+    for f in cfg.data_folder.iterdir():
+        mtime = datetime.datetime.fromtimestamp(
+            f.stat().st_mtime, tz=datetime.timezone.utc
+        )
+        response.append(
+            {"date": mtime.isoformat(), "name": f.name, "relative_url": f"/files/{f.name}"}
+        )
+    return web.json_response(response)
 
 
 @sio.event
@@ -58,8 +74,12 @@ async def question(sid, data):
         )
     except:
         logger.exception("Failed to get message from server")
-        await sio.emit("response", ResponseText(response="Sorry. Failed to process", sources="").json(), room=sid)
-        return    
+        await sio.emit(
+            "response",
+            ResponseText(response="Sorry. Failed to process", sources="").json(),
+            room=sid,
+        )
+        return
     logger.info("response: %s", res.response)
     await sio.emit("response", res.json(), room=sid)
 

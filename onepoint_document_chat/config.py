@@ -108,3 +108,5 @@ if __name__ == "__main__":
 
     assert cfg is not None
     logger.info(cfg)
+    for f in cfg.data_folder.iterdir():
+        print(f)
