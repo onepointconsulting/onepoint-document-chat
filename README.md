@@ -20,6 +20,8 @@ Also copy the content of the binary of this repository (https://github.com/onepo
 
 ## Running the server
 
+Change to the root folder of the project and then execute:
+
 ```
 python ./onepoint_document_chat/server/websocket_server.py
 ```
