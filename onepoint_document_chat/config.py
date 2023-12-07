@@ -69,6 +69,7 @@ class Config:
     # Websocket
     websocket_cors_allowed_origins = os.getenv("WEBSOCKET_CORS_ALLOWED_ORIGINS")
     websocket_server = os.getenv("WEBSOCKET_SERVER")
+    assert websocket_server is not None
     websocket_port = int(os.getenv("WEBSOCKET_PORT"))
 
     # Web server

@@ -54,7 +54,11 @@ async def get_handler(_):
             f.stat().st_mtime, tz=datetime.timezone.utc
         )
         response.append(
-            {"date": mtime.isoformat(), "name": f.name, "relative_url": f"/files/{f.name}"}
+            {
+                "date": mtime.isoformat(),
+                "name": f.name,
+                "relative_url": f"/files/{f.name}",
+            }
         )
     return web.json_response(response, headers=CORS_HEADERS)
 
